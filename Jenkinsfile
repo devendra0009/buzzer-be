@@ -19,51 +19,78 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t buzzerbackend:${IMAGE_TAG} ."
+//                     sh "docker build -t buzzerbackend:${IMAGE_TAG} ."
+                    bat "docker build -t buzzerbackend:%IMAGE_TAG% ."
                 }
             }
         }
 
+//         stage('Login to ECR') {
+//             steps {
+//                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+//                     sh """
+//                     aws ecr get-login-password --region ${AWS_REGION} | \
+//                     docker login --username AWS --password-stdin ${ECR_REPO}
+//                     """
+//                 }
+//             }
+//         }
+
         stage('Login to ECR') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-                    sh """
-                    aws ecr get-login-password --region ${AWS_REGION} | \
-                    docker login --username AWS --password-stdin ${ECR_REPO}
+                    bat """
+                    aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO%
                     """
                 }
             }
         }
 
+
         stage('Tag & Push Image') {
             steps {
-                sh """
-                docker tag buzzerbackend:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
-                docker push ${ECR_REPO}:${IMAGE_TAG}
-                """
+//                 sh """
+//                 docker tag buzzerbackend:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+//                 docker push ${ECR_REPO}:${IMAGE_TAG}
+//                 """
+
+            bat """
+            docker tag buzzerbackend:%IMAGE_TAG% %ECR_REPO%:%IMAGE_TAG%
+            docker push %ECR_REPO%:%IMAGE_TAG%
+            """
+
             }
         }
 
         stage('Deploy to EC2') {
             steps {
                 sshagent(['ec2-ssh']) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no ec2-user@${EC2_HOST} '
+//                     sh """
+//                     ssh -o StrictHostKeyChecking=no ec2-user@${EC2_HOST} '
+//
+//                     aws ecr get-login-password --region ${AWS_REGION} | \
+//                     docker login --username AWS --password-stdin ${ECR_REPO} &&
+//
+//                     docker pull ${ECR_REPO}:${IMAGE_TAG} &&
+//
+//                     docker stop buzzer-backend || true &&
+//                     docker rm buzzer-backend || true &&
+//
+//                     docker run -d \
+//                         --name buzzer-backend \
+//                         -p 80:8080 \
+//                         ${ECR_REPO}:${IMAGE_TAG}
+//                     '
+//                     """
 
-                    aws ecr get-login-password --region ${AWS_REGION} | \
-                    docker login --username AWS --password-stdin ${ECR_REPO} &&
-
-                    docker pull ${ECR_REPO}:${IMAGE_TAG} &&
-
-                    docker stop buzzer-backend || true &&
-                    docker rm buzzer-backend || true &&
-
-                    docker run -d \
-                        --name buzzer-backend \
-                        -p 80:8080 \
-                        ${ECR_REPO}:${IMAGE_TAG}
-                    '
-                    """
+                 bat """
+                            ssh -o StrictHostKeyChecking=no ec2-user@%EC2_HOST% ^
+                            "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO% && ^
+                            docker pull %ECR_REPO%:%IMAGE_TAG% && ^
+                            docker stop buzzer-backend || exit 0 && ^
+                            docker rm buzzer-backend || exit 0 && ^
+                            docker run -d --name buzzer-backend -p 80:8080 %ECR_REPO%:%IMAGE_TAG%"
+                            """
                 }
             }
         }
