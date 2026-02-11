@@ -12,6 +12,6 @@ public class TestController {
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         log.info("test");
-        return ResponseEntity.ok("Test ok22222!!!");
+        return ResponseEntity.ok("Test ok22222 duhh!!!");
     }
 }

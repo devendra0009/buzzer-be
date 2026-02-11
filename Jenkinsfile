@@ -118,7 +118,7 @@ pipeline {
 //     """
 // }
 
-sshagent(['ec2-ssh-key-id']) {
+sshagent(['ec2-ssh']) {
     bat """
     ssh -o StrictHostKeyChecking=no ec2-user@3.80.215.101 ^
     "docker pull 780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend:latest && ^
