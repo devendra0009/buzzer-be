@@ -104,19 +104,30 @@ pipeline {
 //             """
 
 
-withCredentials([sshUserPrivateKey(
-    credentialsId: 'ec2-ssh',
-    keyFileVariable: 'SSH_KEY'
-)]) {
+// withCredentials([sshUserPrivateKey(
+//     credentialsId: 'ec2-ssh',
+//     keyFileVariable: 'SSH_KEY'
+// )]) {
+//
+//     bat """
+//     ssh -i %SSH_KEY% -o StrictHostKeyChecking=no ec2-user@3.80.215.101 ^
+//     "docker pull 780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend:latest && ^
+//     docker stop buzzer-backend || exit 0 && ^
+//     docker rm buzzer-backend || exit 0 && ^
+//     docker run -d --name buzzer-backend -p 80:8080 780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend:latest"
+//     """
+// }
 
+sshagent(['ec2-ssh-key-id']) {
     bat """
-    ssh -i %SSH_KEY% -o StrictHostKeyChecking=no ec2-user@3.80.215.101 ^
+    ssh -o StrictHostKeyChecking=no ec2-user@3.80.215.101 ^
     "docker pull 780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend:latest && ^
     docker stop buzzer-backend || exit 0 && ^
     docker rm buzzer-backend || exit 0 && ^
     docker run -d --name buzzer-backend -p 80:8080 780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend:latest"
     """
 }
+
 
             }
         }
