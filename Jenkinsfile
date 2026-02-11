@@ -94,14 +94,10 @@ pipeline {
 //                 }
 
 // give keys path wherever stored in windows as jenkins is running on windows .
-     bat """
-            ssh -i C:\\keys\\buzzer-kp-11feb.pem -o StrictHostKeyChecking=no ec2-user@%EC2_HOST% ^
-            "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO% && ^
-            docker pull %ECR_REPO%:%IMAGE_TAG% && ^
-            docker stop buzzer-backend || true && ^
-            docker rm buzzer-backend || true && ^
-            docker run -d --name buzzer-backend -p 80:8080 %ECR_REPO%:%IMAGE_TAG%"
-            """
+    bat """
+    ssh -i C:\\keys\\buzzer-kp-11feb.pem -o StrictHostKeyChecking=no ec2-user@%EC2_HOST% "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO% && docker pull %ECR_REPO%:%IMAGE_TAG% && docker stop buzzer-backend || exit 0 && docker rm buzzer-backend || exit 0 && docker run -d --name buzzer-backend -p 80:8080 %ECR_REPO%:%IMAGE_TAG%"
+    """
+
 
 
 // withCredentials([sshUserPrivateKey(
