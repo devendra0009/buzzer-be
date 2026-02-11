@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = "us-east-1"
         ECR_REPO = "780886633405.dkr.ecr.us-east-1.amazonaws.com/buzzerbackend"
         IMAGE_TAG = "latest"
-        EC2_HOST = "100.27.230.74"
+        EC2_HOST = "3.80.215.101"
     }
 
     stages {
