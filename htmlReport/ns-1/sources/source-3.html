@@ -1,0 +1,142 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CloudinaryUploadController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.davendra.buzzer.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CloudinaryUploadController (com.davendra.buzzer.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CloudinaryUploadController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.davendra.buzzer.controller;
+&nbsp;
+&nbsp;import com.davendra.buzzer.services.CloudinaryUploadService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/upload&quot;)
+<b class="nc">&nbsp;public class CloudinaryUploadController {</b>
+&nbsp;    @Autowired
+&nbsp;    private CloudinaryUploadService cloudinaryUploadService;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/file&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; uploadFile(@RequestParam(&quot;file&quot;) MultipartFile multipartFile) throws IOException {
+<b class="nc">&nbsp;        if (multipartFile == null || multipartFile.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;No files were provided.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.status(200).body(cloudinaryUploadService.uploadFile(multipartFile));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/multiple/files&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; uploadMultipleFiles(@RequestParam(&quot;files&quot;) List&lt;MultipartFile&gt; files) throws IOException {
+<b class="nc">&nbsp;        if (files == null || files.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(&quot;No files were provided.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        List&lt;String&gt; uploadedUrls = cloudinaryUploadService.uploadMultipleFiles(files); // Use the service method</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(uploadedUrls); // Return the list of uploaded URLs</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-08 19:17</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > CommentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.davendra.buzzer.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentController (com.davendra.buzzer.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.davendra.buzzer.controller;
+&nbsp;
+&nbsp;
+&nbsp;import com.davendra.buzzer.dto.request.CommentRequest;
+&nbsp;import com.davendra.buzzer.dto.response.CommentResponse;
+&nbsp;import com.davendra.buzzer.dto.response.GlobalApiResponse;
+&nbsp;import com.davendra.buzzer.entity.CommentModel;
+&nbsp;import com.davendra.buzzer.services.CommentService;
+&nbsp;import com.davendra.buzzer.services.UserService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/comment&quot;)
+<b class="nc">&nbsp;public class CommentController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private CommentService commentService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;
+&nbsp;    // Get all comments by User ID
+&nbsp;    @GetMapping(&quot;/user&quot;)
+&nbsp;    public ResponseEntity&lt;GlobalApiResponse&lt;?&gt;&gt; getCommentsByUserId(@RequestHeader(&quot;Authorization&quot;) String token, @RequestParam(defaultValue = &quot;0&quot;) int page, @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<b class="nc">&nbsp;        Long userId = userService.getUserFromToken(token).getId();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(commentService.getCommentsByUserId(userId, page, size));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Get all comments by post ID
+&nbsp;    @GetMapping(&quot;/post/{postId}&quot;)
+&nbsp;    public ResponseEntity&lt;GlobalApiResponse&lt;?&gt;&gt; getCommentsByPostId(@PathVariable(&quot;postId&quot;) Long postId, @RequestParam(defaultValue = &quot;0&quot;) int page, @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(commentService.getCommentsByPostId(postId, page, size));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Get comment by Comment ID
+&nbsp;    @GetMapping(&quot;/{commentId}&quot;)
+&nbsp;    public ResponseEntity&lt;CommentModel&gt; getCommentById(@PathVariable Long commentId) {
+<b class="nc">&nbsp;        CommentModel comment = commentService.getCommentsById(commentId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(comment);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Create a new comment
+&nbsp;    @PostMapping
+&nbsp;    public ResponseEntity&lt;CommentResponse&gt; createComment(
+&nbsp;            @RequestHeader(&quot;Authorization&quot;) String token,
+&nbsp;            @RequestBody CommentRequest commentReq) {
+<b class="nc">&nbsp;        Long userId = userService.getUserFromToken(token).getId();</b>
+<b class="nc">&nbsp;        CommentResponse createdComment = commentService.createComment(commentReq, userId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Like a comment
+&nbsp;    @PostMapping(&quot;/like/{commentId}&quot;)
+&nbsp;    public ResponseEntity&lt;CommentResponse&gt; likeComment(
+&nbsp;            @PathVariable Long commentId,
+&nbsp;            @RequestHeader(&quot;Authorization&quot;) String token) {
+<b class="nc">&nbsp;        Long userId = userService.getUserFromToken(token).getId();</b>
+<b class="nc">&nbsp;        CommentResponse response = commentService.likeComment(commentId, userId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Delete a comment
+&nbsp;    @DeleteMapping(&quot;/delete/{commentId}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; deleteComment(
+&nbsp;            @PathVariable Long commentId,
+&nbsp;            @RequestHeader(&quot;Authorization&quot;) String token) throws Exception {
+<b class="nc">&nbsp;        Long userId = userService.getUserFromToken(token).getId();</b>
+<b class="nc">&nbsp;        String response = commentService.deleteComment(commentId, userId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-08 19:17</div>
+</div>
+</body>
+</html>

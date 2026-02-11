@@ -1,0 +1,162 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AuthController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.davendra.buzzer.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthController (com.davendra.buzzer.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.davendra.buzzer.controller;
+&nbsp;
+&nbsp;import com.davendra.buzzer.dto.request.LoginRequest;
+&nbsp;import com.davendra.buzzer.dto.request.RegisterRequest;
+&nbsp;import com.davendra.buzzer.dto.response.AuthResponse;
+&nbsp;import com.davendra.buzzer.dto.response.GlobalApiResponse;
+&nbsp;import com.davendra.buzzer.enums.GenderEnum;
+&nbsp;import com.davendra.buzzer.services.CloudinaryUploadService;
+&nbsp;import com.davendra.buzzer.services.UserService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/auth&quot;)
+<b class="nc">&nbsp;public class AuthController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;    @Autowired
+&nbsp;    private CloudinaryUploadService cloudinaryUploadService;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/register&quot;)
+&nbsp;    public ResponseEntity&lt;AuthResponse&gt; registerUser(@RequestParam(name = &quot;firstName&quot;, required = true) String firstName,
+&nbsp;                                                     @RequestParam(name = &quot;lastName&quot;, required = true) String lastName,
+&nbsp;                                                     @RequestParam(name = &quot;userName&quot;, required = true) String userName,
+&nbsp;                                                     @RequestParam(name = &quot;email&quot;, required = false) String email,
+&nbsp;                                                     @RequestParam(name = &quot;phone&quot;, required = false) String phone,
+&nbsp;                                                     @RequestParam(name = &quot;password&quot;, required = true) String password,
+&nbsp;                                                     @RequestParam(name = &quot;gender&quot;, required = true) GenderEnum gender,
+&nbsp;                                                     @RequestPart(value = &quot;profileImg&quot;, required = false) MultipartFile profileImg) throws IOException {
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            String profileImgUrl = cloudinaryUploadService.uploadFile(profileImg);</b>
+<b class="nc">&nbsp;            RegisterRequest registerRequest = RegisterRequest.builder().firstName(firstName).lastName(lastName).userName(userName).email(email).phone(phone).password(password).gender(gender).profileImg(profileImgUrl).build();</b>
+<b class="nc">&nbsp;            AuthResponse registeredUser = userService.registerUser(registerRequest);</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            throw e;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    public ResponseEntity&lt;AuthResponse&gt; loginUser(@RequestBody LoginRequest user) {
+<b class="nc">&nbsp;        AuthResponse registeredUser = userService.loginUser(user);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/validate/userName&quot;)
+&nbsp;    public ResponseEntity&lt;GlobalApiResponse&lt;?&gt;&gt; getUserByUserName(@RequestParam String username) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(userService.findUserByUserName(username));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-08 19:17</div>
+</div>
+</body>
+</html>

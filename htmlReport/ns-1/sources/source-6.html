@@ -1,0 +1,223 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > GoogleAuthController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.davendra.buzzer.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: GoogleAuthController (com.davendra.buzzer.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GoogleAuthController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.davendra.buzzer.controller;
+&nbsp;
+&nbsp;import com.davendra.buzzer.dto.request.LoginRequest;
+&nbsp;import com.davendra.buzzer.dto.request.RegisterRequest;
+&nbsp;import com.davendra.buzzer.dto.response.AuthResponse;
+&nbsp;import com.davendra.buzzer.dto.response.GlobalApiResponse;
+&nbsp;import com.davendra.buzzer.entity.UserModel;
+&nbsp;import com.davendra.buzzer.enums.GenderEnum;
+&nbsp;import com.davendra.buzzer.repositories.UserRepo;
+&nbsp;import com.davendra.buzzer.services.UserService;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.http.*;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/auth/google&quot;)
+<b class="nc">&nbsp;@Slf4j</b>
+<b class="nc">&nbsp;public class GoogleAuthController {</b>
+&nbsp;
+&nbsp;    @Value(&quot;${spring.security.oauth2.client.registration.google.client-id}&quot;)
+&nbsp;    private String clientId;
+&nbsp;    @Value(&quot;${spring.security.oauth2.client.registration.google.client-secret}&quot;)
+&nbsp;    private String clientSecret;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RestTemplate restTemplate;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private PasswordEncoder passwordEncoder;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepo userRepo;
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/callback&quot;)
+&nbsp;    public ResponseEntity&lt;AuthResponse&gt; handleGoogleCallback(@RequestParam String code) throws Exception {
+&nbsp;
+&nbsp;        // Exchange auth code with tokens (fe send auth code to backend)
+<b class="nc">&nbsp;        String tokenEndpoint = &quot;https://oauth2.googleapis.com/token&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</b>
+&nbsp;
+<b class="nc">&nbsp;        MultiValueMap&lt;String, String&gt; body = new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        body.add(&quot;code&quot;, code);</b>
+<b class="nc">&nbsp;        body.add(&quot;client_id&quot;, clientId);</b>
+<b class="nc">&nbsp;        body.add(&quot;client_secret&quot;, clientSecret);</b>
+&nbsp;//        body.add(&quot;redirect_uri&quot;, &quot;https://developers.google.com/oauthplayground&quot;);
+<b class="nc">&nbsp;        body.add(&quot;redirect_uri&quot;, &quot;http://localhost:3000&quot;);</b>
+<b class="nc">&nbsp;        body.add(&quot;grant_type&quot;, &quot;authorization_code&quot;);</b>
+<b class="nc">&nbsp;        HttpEntity&lt;MultiValueMap&lt;String, String&gt;&gt; requestEntity = new HttpEntity&lt;&gt;(body, headers);</b>
+<b class="nc">&nbsp;        ResponseEntity&lt;Map&gt; tokenResponse = restTemplate.postForEntity(tokenEndpoint, requestEntity, Map.class);</b>
+&nbsp;
+<b class="nc">&nbsp;        String idToken = (String) tokenResponse.getBody().get(&quot;id_token&quot;);</b>
+<b class="nc">&nbsp;        String userInfoUrl = &quot;https://oauth2.googleapis.com/tokeninfo?id_token=&quot; + idToken;</b>
+<b class="nc">&nbsp;        ResponseEntity&lt;Map&gt; userInfoResponse = restTemplate.getForEntity(userInfoUrl, Map.class);</b>
+&nbsp;        try {
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;            if (userInfoResponse.getStatusCode() == HttpStatus.OK) {</b>
+<b class="nc">&nbsp;                Map&lt;String, Object&gt; userInfo = userInfoResponse.getBody();</b>
+<b class="nc">&nbsp;                String email = (String) userInfo.get(&quot;email&quot;);</b>
+<b class="nc">&nbsp;                String firstName = (String) userInfo.get(&quot;given_name&quot;);</b>
+<b class="nc">&nbsp;                String lastName = (String) userInfo.get(&quot;family_name&quot;);</b>
+<b class="nc">&nbsp;                String profileImg = (String) userInfo.get(&quot;picture&quot;);</b>
+<b class="nc">&nbsp;                String genderStr = (String) userInfo.get(&quot;gender&quot;); // Google returns &quot;male&quot; or &quot;female&quot;</b>
+<b class="nc">&nbsp;                UserModel userModel = null;</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    userModel = userService.findUserByEmail(email);</b>
+<b class="nc">&nbsp;                    if (userModel != null) {</b>
+<b class="nc">&nbsp;                        LoginRequest loginRequest = LoginRequest.builder().email(email).build();</b>
+<b class="nc">&nbsp;                        AuthResponse authResponse = userService.loginUserWithGoogle(loginRequest);</b>
+<b class="nc">&nbsp;                        return ResponseEntity.status(HttpStatus.OK).body(authResponse);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                } catch (Exception e) {</b>
+<b class="nc">&nbsp;                    if (userModel == null) {</b>
+<b class="nc">&nbsp;                        String randomSuffix = String.valueOf((int) (Math.random() * 9000) + 1000); // Random 4-digit number</b>
+<b class="nc">&nbsp;                        String userName = firstName + lastName + randomSuffix;</b>
+&nbsp;
+<b class="nc">&nbsp;                        GenderEnum gender = null;</b>
+<b class="nc">&nbsp;                        if (genderStr != null) {</b>
+&nbsp;                            try {
+<b class="nc">&nbsp;                                gender = GenderEnum.valueOf(genderStr.toUpperCase()); // Convert &quot;male&quot; -&gt; MALE</b>
+<b class="nc">&nbsp;                            } catch (IllegalArgumentException ex) {</b>
+<b class="nc">&nbsp;                                ex.printStackTrace();</b>
+<b class="nc">&nbsp;                                log.info(ex.getMessage());</b>
+<b class="nc">&nbsp;                            }</b>
+&nbsp;                        }
+<b class="nc">&nbsp;                        RegisterRequest registerRequest = RegisterRequest.builder().firstName(firstName).lastName(lastName).email(email).userName(userName).profileImg(profileImg).phone(&quot;&quot;).gender(gender).password(UUID.randomUUID().toString()).build();</b>
+<b class="nc">&nbsp;                        AuthResponse registeredUserWithGoogle = userService.registerUser(registerRequest);</b>
+<b class="nc">&nbsp;                        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUserWithGoogle);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;                throw new Exception(&quot;Some error occured while loggin in with google&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);</b>
+<b class="nc">&nbsp;        } catch (Exception ey) {</b>
+<b class="nc">&nbsp;            throw ey;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-02-08 19:17</div>
+</div>
+</body>
+</html>
